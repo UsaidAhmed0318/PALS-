@@ -1,0 +1,15 @@
+:root {
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: #ffffff;
+  font-family: "Poppins", sans-serif;
+  color: #1e293b;
+}

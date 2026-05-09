@@ -1,0 +1,183 @@
+/* Feature bar */
+.featureBar {
+  background: var(--clr-white);
+  border-top: 1px solid var(--clr-border-soft);
+  border-bottom: 1px solid var(--clr-border-soft);
+  padding: 24px 20px;
+}
+
+.featureContainer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.featureIconWrap {
+  width: 48px;
+  height: 48px;
+  background: var(--clr-primary-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--clr-primary);
+}
+
+.featureText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.featureText strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--clr-text);
+}
+
+.featureText span {
+  font-size: 12px;
+  color: var(--clr-text-muted);
+  line-height: 1.4;
+}
+
+/* Promo banner */
+.promoBanner {
+  position: relative;
+  background: var(--grad-primary);
+  padding: 64px 20px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.promoBg {
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.promoContent {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.promoEyebrow {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.promoHeading {
+  font-size: var(--font-3xl);
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+}
+
+.promoHeading span {
+  color: var(--clr-yellow);
+}
+
+.promoDesc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  max-width: 480px;
+}
+
+.promoDesc strong {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.promoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: white;
+  color: var(--clr-primary);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  margin-top: 4px;
+}
+
+.promoBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: var(--clr-primary);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .featureContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .featureContainer {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .feature {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .featureText strong {
+    font-size: 13px;
+  }
+
+  .featureText span {
+    font-size: 11px;
+  }
+
+  .promoBanner {
+    padding: 48px 20px;
+  }
+
+  .promoHeading {
+    font-size: var(--font-2xl);
+  }
+
+  .promoDesc {
+    font-size: 14px;
+  }
+}

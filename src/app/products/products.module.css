@@ -1,0 +1,21 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
+  color: #2d3748;
+}
+
+.header p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #718096;
+}

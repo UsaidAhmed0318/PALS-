@@ -1,0 +1,157 @@
+/* ================================================
+   BABY CARE MODULE — UPDATED & OPTIMIZED
+   ================================================ */
+
+.wrapper {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+  background: var(--clr-bg);
+  min-height: 100vh;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  font-size: var(--font-sm);
+  color: var(--clr-text-soft); /* Variable used */
+  margin-bottom: var(--space-sm);
+}
+
+.breadcrumb a {
+  color: var(--clr-text-muted);
+  transition: var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+  color: var(--clr-primary);
+}
+
+.breadcrumbActive {
+  color: var(--clr-primary);
+  font-weight: 700;
+}
+
+/* ── Title ── */
+.title {
+  font-size: var(--font-2xl);
+  font-weight: 800;
+  color: var(--clr-black);
+  margin-bottom: var(--space-lg);
+  letter-spacing: -0.5px;
+}
+
+/* ── Filter Bar ── */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--clr-border-soft);
+  position: relative;
+}
+
+.divider {
+  width: 2px;
+  height: 24px;
+  background: var(--clr-border-soft);
+  border-radius: var(--radius-full);
+  margin: 0 var(--space-xs);
+}
+
+/* ── Buttons (Unified Style) ── */
+.allBtn,
+.tabBtn {
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--clr-border);
+  background: var(--clr-white);
+  color: var(--clr-text-muted);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  white-space: nowrap;
+}
+
+.allBtn:hover,
+.tabBtn:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: var(--clr-primary-light);
+  transform: translateY(-1px);
+}
+
+/* ── Active State (VIP Gradient) ── */
+.allBtnActive,
+.tabBtnActive {
+  background: var(--grad-primary);
+  border-color: transparent;
+  color: var(--clr-white);
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
+}
+
+.tabsTrack {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ── Products Grid ── */
+.gridArea {
+  margin-top: var(--space-md);
+}
+
+.productsSection {
+  display: grid; /* Flex se Grid pe shift kiya for better alignment */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  padding: var(--space-sm) 0;
+}
+
+.emptyMsg {
+  color: var(--clr-text-soft);
+  font-size: var(--font-md);
+  text-align: center;
+  padding: var(--space-2xl) 0;
+  font-style: italic;
+}
+
+/* ── Responsive Adjustments ── */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: var(--space-lg);
+  }
+  .title {
+    font-size: var(--font-xl);
+  }
+  .productsSection {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .divider {
+    display: none;
+  }
+  .allBtn,
+  .tabBtn {
+    font-size: var(--font-xs);
+    padding: 8px 14px;
+    flex-grow: 1; /* Mobile pe buttons space fill karein ge */
+    text-align: center;
+  }
+  .tabsTrack {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Do-do buttons ek line mein */
+  }
+}

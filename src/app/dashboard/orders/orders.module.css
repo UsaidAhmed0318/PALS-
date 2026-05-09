@@ -1,0 +1,105 @@
+.container {
+  max-width: 1000px;
+}
+
+.container h1 {
+  margin: 0 0 2rem 0;
+  color: #2d3748;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.orderCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.3s;
+}
+
+.orderCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.orderHeader h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: #2d3748;
+}
+
+.date {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.status {
+  padding: 0.5rem 1rem;
+  background: #edf2f7;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.orderFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #48bb78;
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty h2 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+}
+
+.empty p {
+  margin: 0 0 2rem 0;
+  color: #718096;
+}
+
+.shopBtn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: #4299e1;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.shopBtn:hover {
+  background: #3182ce;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #718096;
+}

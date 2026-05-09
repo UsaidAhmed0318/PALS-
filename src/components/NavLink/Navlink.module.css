@@ -1,0 +1,7 @@
+.active {
+  background: var(--grad-primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+  color: var(--clr-accent);
+  border-radius: var(--radius-full);
+}

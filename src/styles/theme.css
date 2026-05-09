@@ -1,0 +1,124 @@
+/*
+  EoriCart VIP Theme Layer
+  This file is intentionally focused on global brand polish.
+  Component CSS modules should read from variables in base.css.
+*/
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--clr-text);
+}
+
+main,
+section,
+article,
+aside,
+header,
+footer {
+  position: relative;
+}
+
+a {
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+a:hover {
+  color: var(--clr-primary);
+}
+
+button {
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast), filter var(--transition-fast),
+    background var(--transition-fast), border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+button:hover {
+  filter: brightness(1.01);
+}
+
+input,
+textarea,
+select {
+  caret-color: var(--clr-primary);
+}
+
+.surface-glass {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(220, 230, 240, 0.9);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+
+.surface-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  border: 1px solid var(--clr-border-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-ring {
+  box-shadow: 0 0 0 3px rgba(2, 105, 166, 0.12);
+}
+
+.theme-primary {
+  color: var(--clr-primary);
+}
+
+.theme-accent {
+  color: var(--clr-accent);
+}
+
+.theme-danger {
+  color: var(--clr-danger);
+}
+
+.theme-warning {
+  color: var(--clr-warning-dark);
+}
+
+.bg-primary-soft {
+  background: var(--clr-primary-light);
+}
+
+.bg-accent-soft {
+  background: var(--clr-accent-light);
+}
+
+.bg-danger-soft {
+  background: var(--clr-danger-light);
+}
+
+.shadow-brand {
+  box-shadow: var(--shadow-md);
+}
+
+.gradient-primary {
+  background: var(--grad-primary);
+}
+
+.gradient-accent {
+  background: var(--grad-accent);
+}
+
+.gradient-danger {
+  background: var(--grad-danger);
+}
+
+@media (max-width: 768px) {
+  .surface-glass,
+  .surface-panel {
+    backdrop-filter: blur(8px);
+  }
+}
