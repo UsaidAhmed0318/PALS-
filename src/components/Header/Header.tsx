@@ -67,7 +67,7 @@ function SearchDropdown({
         <>
           <ul className={styles.dropdownList}>
             {results.map((item) => {
-              const imgUrl = buildImg(item.website_image || item.image);
+              const imgUrl = buildImg(item.image);
               return (
                 <li key={item.item_code}>
                   <button

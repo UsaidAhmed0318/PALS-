@@ -1,48 +1,72 @@
-import { useFrappeList, useFrappeDoc } from './useFrappe';
-import { Product, ItemPrice } from '@/types/product';
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api/client';
+import { Product } from '@/types/product';
+
+export const ITEM_FIELDS = [
+  'item_code',
+  'item_name',
+  'description',
+  'item_group',
+  'image',
+  'stock_uom',
+  'valuation_rate',
+  'brand',
+  'has_variants',
+  'variant_of',
+];
+
+type FilterValue = string | number | [string, unknown];
+type ExtraFilters = Record<string, FilterValue>;
+
+function buildFilterList(extra?: ExtraFilters): unknown[] {
+  const list: unknown[] = [['custom_is_published', '=', 1]];
+  if (!extra) return list;
+  Object.entries(extra).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      list.push([k, v[0], v[1]]);
+    } else {
+      list.push([k, '=', v]);
+    }
+  });
+  return list;
+}
 
 export function useProducts(
-  filters?: Record<string, unknown>,
+  extraFilters?: ExtraFilters,
   limit: number = 20,
-  orderBy: string | undefined = 'modified desc',
+  orderBy: string | undefined = 'item_name asc',
+  enabled: boolean = true,
 ) {
-  return useFrappeList<Product>('Item', {
-    fields: [
-      'name',
-      'item_code',
-      'item_name',
-      'description',
-      'item_group',
-      'image',
-      'website_image',
-      'stock_uom',
-      'standard_rate',
-      'has_variants',
-      'variant_of',
-    ],
-    filters: {
-      disabled: 0,
-      ...filters,
+  return useQuery<{ data: Product[] }>({
+    queryKey: ['products', extraFilters, limit, orderBy],
+    enabled,
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('fields', JSON.stringify(ITEM_FIELDS));
+      params.set('limit_page_length', String(limit));
+      if (orderBy) params.set('order_by', orderBy);
+      params.set('filters', JSON.stringify(buildFilterList(extraFilters)));
+      const res = await apiClient.get(`/api/resource/Item?${params.toString()}`);
+      return res.data;
     },
-    limit_page_length: limit,
-    order_by: orderBy,
+    staleTime: 60_000,
+    retry: 2,
   });
 }
 
 export function useProduct(itemCode: string | null) {
-  return useFrappeDoc<Product>('Item', itemCode);
-}
-
-export function useItemPrice(
-  itemCode: string | null,
-  priceList: string = 'Standard Selling',
-) {
-  return useFrappeList<ItemPrice>('Item Price', {
-    fields: ['name', 'item_code', 'price_list', 'price_list_rate', 'currency'],
-    filters: {
-      item_code: itemCode,
-      price_list: priceList,
+  return useQuery<Product>({
+    queryKey: ['product', itemCode],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('fields', JSON.stringify(ITEM_FIELDS));
+      const res = await apiClient.get(
+        `/api/resource/Item/${encodeURIComponent(itemCode!)}?${params.toString()}`,
+      );
+      return res.data?.data ?? res.data;
     },
-    limit_page_length: 1,
+    enabled: !!itemCode,
+    staleTime: 60_000,
+    retry: 1,
   });
 }

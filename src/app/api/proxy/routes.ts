@@ -32,13 +32,13 @@ export const ROUTE_ALLOWLIST: RouteConfig[] = [
     description: "Public: Get single item details",
   },
   {
-    pattern: /^\/api\/resource\/Item\%20Price$/,
+    pattern: /^\/api\/resource\/Item[\s%20]{0,3}Price$/,
     authMode: AuthMode.API_KEY,
     methods: ["GET"],
     description: "Public: Get item pricing",
   },
   {
-    pattern: /^\/api\/resource\/Website\%20Item$/,
+    pattern: /^\/api\/resource\/Website[\s%20]{0,3}Item$/,
     authMode: AuthMode.API_KEY,
     methods: ["GET"],
     description: "Public: Get website items (published products)",
@@ -58,10 +58,10 @@ export const ROUTE_ALLOWLIST: RouteConfig[] = [
     description: "Public: Get item availability",
   },
   {
-    pattern: /^\/api\/resource\/Item\%20Group$/,
+    pattern: /^\/api\/resource\/Item[\s%20]{0,3}Group$/,
     authMode: AuthMode.API_KEY,
     methods: ["GET"],
-    description: "Public: Get item pricing",
+    description: "Public: Get item groups / categories",
   },
 
   // ==================== PRIVATE ROUTES (OAuth) ====================
@@ -72,13 +72,13 @@ export const ROUTE_ALLOWLIST: RouteConfig[] = [
     description: "Private: Customer profile",
   },
   {
-    pattern: /^\/api\/resource\/Sales\%20Order$/,
+    pattern: /^\/api\/resource\/Sales[\s%20]{0,3}Order$/,
     authMode: AuthMode.OAUTH,
     methods: ["GET", "POST"],
     description: "Private: Sales orders (list/create)",
   },
   {
-    pattern: /^\/api\/resource\/Sales\%20Order\/[A-Z0-9\-]+$/,
+    pattern: /^\/api\/resource\/Sales[\s%20]{0,3}Order\/[A-Z0-9\-]+$/,
     authMode: AuthMode.OAUTH,
     methods: ["GET"],
     description: "Private: Single sales order details",

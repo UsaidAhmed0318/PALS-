@@ -37,9 +37,9 @@ export function ProductGrid() {
           className={styles.card}
         >
           <div className={styles.imageContainer}>
-            {product.website_image || product.image ? (
+            {product.image ? (
               <Image
-                src={product.website_image || product.image || ''}
+                src={product.image || ''}
                 alt={product.item_name}
                 className={styles.image}
               />

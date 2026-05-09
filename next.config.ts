@@ -2,12 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   typescript: {
-    // This allows the build to complete even with TS errors
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    // Recommended: also ignore lint errors during builds to ensure the VPS finishes
-    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [

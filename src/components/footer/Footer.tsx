@@ -17,7 +17,7 @@ const QUICK_LINKS = [
   { label: 'All Products', href: '/products' },
   { label: 'Contact Us', href: '/contact' },
   { label: 'About Us', href: '/aboutus' },
-  { label: 'Privacy Policy', href: '/privacypolicy' },
+  { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Terms & Conditions', href: '/terms' },
   { label: 'FAQs', href: '/faqs' },
 ];
@@ -165,7 +165,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} EoriCart. All rights reserved.
           </span>
           <div className={styles.bottomLinks}>
-            <Link href="/privacypolicy">Privacy</Link>
+            <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/faqs">FAQs</Link>
           </div>

@@ -18,6 +18,7 @@ interface ProductCardProps {
   originalPrice?: number | null;
   badge?: string | null;
   category?: string;
+  brand?: string | null;
 }
 
 function buildImageUrl(path?: string | null): string | null {
@@ -34,6 +35,7 @@ export default function ProductCard({
   originalPrice,
   badge,
   category,
+  brand,
 }: ProductCardProps) {
   const { addItem, openCart } = useCart();
   const [added, setAdded] = useState(false);
@@ -99,7 +101,7 @@ export default function ProductCard({
         </div>
 
         <div className={styles.body}>
-          {category && <span className={styles.category}>{category}</span>}
+          <span className={styles.category}>{brand || category || 'EoriCart'}</span>
           <h3 className={styles.name}>{itemName}</h3>
 
           <div className={styles.priceRow}>

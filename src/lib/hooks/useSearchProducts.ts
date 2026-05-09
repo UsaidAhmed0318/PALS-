@@ -5,7 +5,6 @@ export interface SearchResult {
   item_code: string;
   item_name: string;
   image?: string;
-  website_image?: string;
   item_group?: string;
 }
 
@@ -16,8 +15,8 @@ export function useSearchProducts(query: string) {
     queryKey: ['search', 'products', trimmed],
     queryFn: async () => {
       const params = new URLSearchParams({
-        fields: '["item_code","item_name","website_image","image","item_group"]',
-        filters: JSON.stringify({ item_name: ['like', `%${trimmed}%`] }),
+        fields: '["item_code","item_name","image","item_group"]',
+        filters: JSON.stringify([['item_name', 'like', `%${trimmed}%`]]),
         limit_page_length: '8',
         order_by: 'item_name asc',
       });

@@ -49,7 +49,14 @@ export default function FeaturedProducts({
             ))
           ) : error ? (
             <div className={styles.errorState}>
-              <p>Could not load products. Please check your connection.</p>
+              <p>
+                Could not load products.{' '}
+                {process.env.NODE_ENV === 'development' && (
+                  <span style={{ fontSize: 12, opacity: 0.7 }}>
+                    {(error as Error)?.message}
+                  </span>
+                )}
+              </p>
               <button onClick={() => window.location.reload()}>Retry</button>
             </div>
           ) : products.length === 0 ? (
@@ -63,8 +70,9 @@ export default function FeaturedProducts({
                 key={product.item_code}
                 itemCode={product.item_code}
                 itemName={product.item_name}
-                image={product.website_image || product.image}
-                price={product.standard_rate || null}
+                image={product.image}
+                price={product.valuation_rate || null}
+                brand={product.brand}
                 category={product.item_group}
               />
             ))

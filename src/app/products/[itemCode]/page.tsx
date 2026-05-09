@@ -10,9 +10,10 @@ import {
   CheckIcon,
   TruckIcon,
   ShieldCheckIcon,
+  TagIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { useProduct, useItemPrice, useProducts } from '@/lib/hooks/useProducts';
+import { useProduct, useProducts } from '@/lib/hooks/useProducts';
 import { useCart } from '@/components/cart/CartContext';
 import ProductCard from '@/components/ui/ProductCard';
 import styles from './ProductDetail.module.css';
@@ -34,37 +35,34 @@ export default function ProductDetailPage({
   const decodedItemCode = decodeURIComponent(itemCode);
 
   const { data: product, isLoading, error } = useProduct(decodedItemCode);
-  const { data: priceData } = useItemPrice(decodedItemCode);
   const { addItem, openCart } = useCart();
 
-  const price = priceData?.data?.[0];
-  const imageUrl = buildImageUrl(
-    (product as any)?.website_image || (product as any)?.image,
-  );
-
   const [quantity, setQuantity] = useState(1);
-  const [wished, setWished] = useState(false);
-  const [added, setAdded] = useState(false);
+  const [wished, setWished]     = useState(false);
+  const [added, setAdded]       = useState(false);
 
-  // Related products — same category
+  const p = product as any;
+  const imageUrl = buildImageUrl(p?.image);
+  const displayPrice: number | null = p?.valuation_rate || null;
+
+  /* Related products — same sub-group */
   const { data: relatedData } = useProducts(
-    (product as any)?.item_group
-      ? { item_group: (product as any).item_group }
-      : undefined,
-    5,
+    p?.item_group ? { item_group: p.item_group } : undefined,
+    6,
+    'item_name asc',
+    !!p?.item_group,
   );
-  const related = (relatedData?.data || []).filter(
-    (p: any) => p.item_code !== decodedItemCode,
-  ).slice(0, 4);
+  const related = (relatedData?.data || [])
+    .filter((r: any) => r.item_code !== decodedItemCode)
+    .slice(0, 4);
 
   const handleAddToCart = () => {
-    if (!product) return;
-    const p = product as any;
+    if (!p) return;
     addItem({
       id: p.item_code,
       name: p.item_name,
-      price: price?.price_list_rate || p.standard_rate || 0,
-      originalPrice: price?.price_list_rate || p.standard_rate || 0,
+      price: displayPrice || 0,
+      originalPrice: displayPrice || 0,
       qty: quantity,
     });
     setAdded(true);
@@ -72,14 +70,19 @@ export default function ProductDetailPage({
     setTimeout(() => setAdded(false), 2500);
   };
 
+  /* ── Loading skeleton ── */
   if (isLoading) {
     return (
       <div className={styles.page}>
         <div className={styles.skeleton}>
           <div className={styles.skeletonImg} />
           <div className={styles.skeletonBody}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className={styles.skeletonLine} style={{ width: `${60 + i * 8}%` }} />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className={styles.skeletonLine}
+                style={{ width: `${45 + i * 10}%`, height: i === 0 ? 28 : 16 }}
+              />
             ))}
           </div>
         </div>
@@ -87,22 +90,19 @@ export default function ProductDetailPage({
     );
   }
 
-  if (error || !product) {
+  /* ── Not found ── */
+  if (error || !p) {
     return (
       <div className={styles.page}>
         <div className={styles.notFound}>
+          <ShoppingCartIcon style={{ width: 56, height: 56, color: 'var(--clr-text-soft)', margin: '0 auto 16px' }} />
           <h1>Product Not Found</h1>
           <p>The product you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-          <Link href="/products" className={styles.backBtn}>
-            Browse Products
-          </Link>
+          <Link href="/products" className={styles.backBtn}>Browse All Products</Link>
         </div>
       </div>
     );
   }
-
-  const p = product as any;
-  const displayPrice = price?.price_list_rate || p.standard_rate;
 
   return (
     <div className={styles.page}>
@@ -125,10 +125,11 @@ export default function ProductDetailPage({
         </nav>
       </div>
 
-      {/* Product detail */}
+      {/* Main content */}
       <div className={styles.container}>
         <div className={styles.productGrid}>
-          {/* Image gallery */}
+
+          {/* ── Image panel ── */}
           <div className={styles.gallery}>
             <div className={styles.mainImageWrap}>
               {imageUrl ? (
@@ -149,21 +150,28 @@ export default function ProductDetailPage({
             </div>
           </div>
 
-          {/* Product info */}
+          {/* ── Info panel ── */}
           <div className={styles.info}>
-            {p.item_group && (
-              <Link
-                href={`/products?category=${encodeURIComponent(p.item_group)}`}
-                className={styles.category}
-              >
-                {p.item_group}
-              </Link>
-            )}
+
+            {/* Brand + category */}
+            <div className={styles.topMeta}>
+              {p.brand && <span className={styles.brand}>{p.brand}</span>}
+              {p.item_group && (
+                <Link
+                  href={`/products?category=${encodeURIComponent(p.item_group)}`}
+                  className={styles.category}
+                >
+                  {p.item_group}
+                </Link>
+              )}
+            </div>
 
             <h1 className={styles.title}>{p.item_name}</h1>
 
             <div className={styles.meta}>
-              <span className={styles.sku}>SKU: {p.item_code}</span>
+              <span className={styles.sku}>
+                <TagIcon style={{ width: 13, height: 13 }} /> {p.item_code}
+              </span>
               <span className={styles.dot}>·</span>
               <span className={styles.stock}>
                 <CheckIcon className={styles.stockIcon} />
@@ -180,9 +188,6 @@ export default function ProductDetailPage({
               ) : (
                 <span className={styles.contactPrice}>Contact for Price</span>
               )}
-              {price?.currency && (
-                <span className={styles.currency}>{price.currency}</span>
-              )}
             </div>
 
             {/* Description */}
@@ -193,13 +198,14 @@ export default function ProductDetailPage({
               />
             )}
 
-            {/* Quantity */}
+            {/* Quantity selector */}
             <div className={styles.qtyBlock}>
               <span className={styles.qtyLabel}>Quantity</span>
               <div className={styles.qty}>
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   aria-label="Decrease quantity"
+                  disabled={quantity <= 1}
                 >
                   −
                 </button>
@@ -213,7 +219,7 @@ export default function ProductDetailPage({
               </div>
             </div>
 
-            {/* Actions */}
+            {/* CTA buttons */}
             <div className={styles.actions}>
               <button
                 className={`${styles.addBtn} ${added ? styles.addedBtn : ''}`}
@@ -235,12 +241,22 @@ export default function ProductDetailPage({
                 )}
               </button>
 
-              <button className={styles.shareBtn} aria-label="Share product">
+              <button
+                className={styles.shareBtn}
+                aria-label="Share product"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: p.item_name, url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+              >
                 <ShareIcon className={styles.shareIcon} />
               </button>
             </div>
 
-            {/* Delivery info */}
+            {/* Delivery trust badges */}
             <div className={styles.deliveryInfo}>
               <div className={styles.deliveryItem}>
                 <TruckIcon className={styles.deliveryIcon} />
@@ -248,7 +264,7 @@ export default function ProductDetailPage({
               </div>
               <div className={styles.deliveryItem}>
                 <ShieldCheckIcon className={styles.deliveryIcon} />
-                <span>100% authentic products · Cash on delivery</span>
+                <span>100% authentic products · Cash on delivery available</span>
               </div>
             </div>
           </div>
@@ -258,7 +274,7 @@ export default function ProductDetailPage({
         {related.length > 0 && (
           <section className={styles.related} aria-labelledby="related-heading">
             <h2 id="related-heading" className={styles.relatedTitle}>
-              Related Products
+              You May Also Like
             </h2>
             <div className={styles.relatedGrid}>
               {(related as any[]).map((item) => (
@@ -266,8 +282,9 @@ export default function ProductDetailPage({
                   key={item.item_code}
                   itemCode={item.item_code}
                   itemName={item.item_name}
-                  image={item.website_image || item.image}
-                  price={item.standard_rate || null}
+                  image={item.image}
+                  price={item.valuation_rate || null}
+                  brand={item.brand}
                   category={item.item_group}
                 />
               ))}

@@ -4,14 +4,13 @@ export interface Product {
   item_name: string;
   description?: string;
   item_group: string;
-  image?: string;
-  website_image?: string;
-  thumbnail?: string;
+  image?: string | null;
   stock_uom: string;
   has_variants?: number;
-  variant_of?: string;
-  standard_rate?: number;
-  website_price?: number;
+  variant_of?: string | null;
+  valuation_rate?: number;
+  brand?: string | null;
+  custom_is_published?: number;
 }
 
 export interface ItemPrice {

@@ -1,45 +1,84 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
-import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useState, useMemo } from 'react';
+import { AdjustmentsHorizontalIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useProducts } from '@/lib/hooks/useProducts';
-import { useCategories } from '@/lib/hooks/useCategories';
+import { useCategories, useSubCategories } from '@/lib/hooks/useCategories';
 import ProductCard from '@/components/ui/ProductCard';
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 import styles from './ProductsPage.module.css';
 
 const SORT_OPTIONS = [
-  { value: 'modified desc', label: 'Newest First' },
-  { value: 'item_name asc', label: 'Name A–Z' },
-  { value: 'item_name desc', label: 'Name Z–A' },
-  { value: 'standard_rate asc', label: 'Price: Low to High' },
-  { value: 'standard_rate desc', label: 'Price: High to Low' },
+  { value: 'item_name asc',      label: 'Name A–Z' },
+  { value: 'item_name desc',     label: 'Name Z–A' },
+  { value: 'valuation_rate asc', label: 'Price: Low to High' },
+  { value: 'valuation_rate desc',label: 'Price: High to Low' },
+  { value: 'modified desc',      label: 'Newest First' },
 ];
 
 function ProductsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const category = searchParams.get('category') || '';
-  const search = searchParams.get('search') || '';
+  const searchQ   = searchParams.get('search')   || '';
 
-  const [sortBy, setSortBy] = useState('modified desc');
+  const [sortBy, setSortBy]         = useState('item_name asc');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchInput, setSearchInput] = useState(searchQ);
 
+  /* ── categories for sidebar ── */
   const { data: catData } = useCategories();
   const categories = catData?.data || [];
 
-  const filters: Record<string, unknown> = {};
-  if (category) filters.item_group = category;
-  if (search) filters.item_name = ['like', `%${search}%`];
+  /* ── sub-categories for selected top-level category ── */
+  const { data: subData, isLoading: subLoading } = useSubCategories(category || null);
+  const subGroups = useMemo(
+    () => subData?.data?.map((s) => s.name) ?? [],
+    [subData],
+  );
 
-  const { data, isLoading, error } = useProducts(filters, 40, sortBy);
+  /* ── build item filters ── */
+  const itemFilters = useMemo(() => {
+    const f: Record<string, unknown> = {};
+    if (searchQ) f.item_name = ['like', `%${searchQ}%`];
+    if (category) {
+      if (subGroups.length > 0) {
+        f.item_group = ['in', subGroups];
+      } else if (!subLoading) {
+        f.item_group = category;   // direct match fallback
+      }
+    }
+    return f;
+  }, [searchQ, category, subGroups, subLoading]);
+
+  const productsEnabled = !category || !subLoading;
+
+  const { data, isLoading: prodLoading, error } = useProducts(
+    itemFilters,
+    200,     // fetch all published products
+    sortBy,
+    productsEnabled,
+  );
+
+  const isLoading = prodLoading || (!!category && subLoading);
   const products = data?.data || [];
 
-  const pageTitle = search
-    ? `Search: "${search}"`
-    : category
-      ? category
-      : 'All Products';
+  const pageTitle = searchQ
+    ? `Results for "${searchQ}"`
+    : category || 'All Products';
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchInput.trim();
+    if (q) router.push(`/products?search=${encodeURIComponent(q)}`);
+    else router.push('/products');
+  };
+
+  const clearSearch = () => {
+    setSearchInput('');
+    router.push('/products');
+  };
 
   return (
     <div className={styles.page}>
@@ -50,23 +89,47 @@ function ProductsContent() {
             <nav className={styles.breadcrumb} aria-label="Breadcrumb">
               <a href="/">Home</a>
               <span>/</span>
-              <span>Products</span>
+              <a href="/products">Products</a>
               {category && (
                 <>
                   <span>/</span>
                   <span>{category}</span>
                 </>
               )}
+              {searchQ && (
+                <>
+                  <span>/</span>
+                  <span>Search</span>
+                </>
+              )}
             </nav>
             <h1 className={styles.pageTitle}>{pageTitle}</h1>
             {!isLoading && (
               <p className={styles.resultCount}>
-                {products.length} product{products.length !== 1 ? 's' : ''} found
+                {products.length} product{products.length !== 1 ? 's' : ''}
+                {category ? ` in ${category}` : ''}
               </p>
             )}
           </div>
 
           <div className={styles.topControls}>
+            {/* inline search */}
+            <form className={styles.inlineSearch} onSubmit={handleSearch}>
+              <MagnifyingGlassIcon className={styles.inlineSearchIcon} />
+              <input
+                type="search"
+                className={styles.inlineSearchInput}
+                placeholder="Search products..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              {searchQ && (
+                <button type="button" className={styles.inlineSearchClear} onClick={clearSearch}>
+                  <XMarkIcon style={{ width: 16, height: 16 }} />
+                </button>
+              )}
+            </form>
+
             <button
               className={styles.filterToggle}
               onClick={() => setShowFilters(!showFilters)}
@@ -91,16 +154,40 @@ function ProductsContent() {
         </div>
       </div>
 
+      {/* Active filters chips */}
+      {(category || searchQ) && (
+        <div className={styles.activeFilters}>
+          <div className={styles.activeFiltersInner}>
+            <span className={styles.filterLabel}>Active:</span>
+            {category && (
+              <a href="/products" className={styles.chip}>
+                {category} <XMarkIcon style={{ width: 12, height: 12 }} />
+              </a>
+            )}
+            {searchQ && (
+              <button className={styles.chip} onClick={clearSearch} type="button">
+                &quot;{searchQ}&quot; <XMarkIcon style={{ width: 12, height: 12 }} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className={styles.layout}>
-        {/* Sidebar filters */}
+        {/* Sidebar */}
         <aside
           className={`${styles.sidebar} ${showFilters ? styles.sidebarOpen : ''}`}
-          aria-label="Filters"
+          aria-label="Category filters"
         >
           <div className={styles.sidebarHeader}>
             <h2 className={styles.sidebarTitle}>Categories</h2>
+            <button
+              className={styles.sidebarClose}
+              onClick={() => setShowFilters(false)}
+            >
+              <XMarkIcon style={{ width: 18, height: 18 }} />
+            </button>
           </div>
-
           <div className={styles.filterGroup}>
             <a
               href="/products"
@@ -113,12 +200,22 @@ function ProductsContent() {
                 key={cat.name}
                 href={`/products?category=${encodeURIComponent(cat.name)}`}
                 className={`${styles.filterCat} ${category === cat.name ? styles.filterCatActive : ''}`}
+                onClick={() => setShowFilters(false)}
               >
                 {cat.name}
               </a>
             ))}
           </div>
         </aside>
+
+        {/* Overlay for mobile */}
+        {showFilters && (
+          <div
+            className={styles.overlay}
+            onClick={() => setShowFilters(false)}
+            aria-hidden="true"
+          />
+        )}
 
         {/* Products grid */}
         <main className={styles.main}>
@@ -136,9 +233,12 @@ function ProductsContent() {
                 : products.length === 0
                   ? (
                     <div className={styles.emptyState}>
+                      <div className={styles.emptyIcon}>
+                        <MagnifyingGlassIcon style={{ width: 40, height: 40 }} />
+                      </div>
                       <p className={styles.emptyTitle}>No products found</p>
                       <p className={styles.emptyDesc}>
-                        Try adjusting your filters or{' '}
+                        Try a different category or{' '}
                         <a href="/products">browse all products</a>.
                       </p>
                     </div>
@@ -148,8 +248,9 @@ function ProductsContent() {
                         key={product.item_code}
                         itemCode={product.item_code}
                         itemName={product.item_name}
-                        image={product.website_image || product.image}
-                        price={product.standard_rate || null}
+                        image={product.image}
+                        price={product.valuation_rate || null}
+                        brand={product.brand}
                         category={product.item_group}
                       />
                     ))}
