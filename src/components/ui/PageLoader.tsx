@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,10 +18,9 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
     <motion.div
       className={styles.splash}
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.45 } }}
+      exit={{ opacity: 0, transition: { duration: 0.4 } }}
     >
       <div className={styles.splashBg} />
-
       <motion.div
         className={styles.splashContent}
         initial={{ opacity: 0, y: 20 }}
@@ -31,8 +30,6 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
         <div className={styles.logoWrap}>
           <Image src={logoImg} alt="EoriCart" height={60} style={{ width: 'auto' }} priority />
         </div>
-
-        {/* Animated dots loader */}
         <div className={styles.dotsRow}>
           {[0, 1, 2].map((i) => (
             <motion.span
@@ -43,11 +40,8 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
             />
           ))}
         </div>
-
         <p className={styles.splashText}>Loading your store...</p>
       </motion.div>
-
-      {/* Bottom progress bar */}
       <div className={styles.splashProgress}>
         <motion.div
           className={styles.splashProgressFill}
@@ -60,23 +54,50 @@ function SplashLoader({ onDone }: { onDone: () => void }) {
   );
 }
 
-/* ─── Top-bar route-change loader ─── */
-function TopBarLoader({ active }: { active: boolean }) {
+/* ─── Page-change overlay loader ─── */
+function RouteLoader({ active }: { active: boolean }) {
   return (
     <AnimatePresence>
       {active && (
-        <motion.div
-          className={styles.topBar}
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.2 } }}
-        >
+        <>
+          {/* Top progress bar */}
           <motion.div
-            className={styles.topBarFill}
-            initial={{ width: '0%' }}
-            animate={{ width: '85%' }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-          />
-        </motion.div>
+            key="topbar"
+            className={styles.topBar}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.15 } }}
+          >
+            <motion.div
+              className={styles.topBarFill}
+              initial={{ width: '0%' }}
+              animate={{ width: '92%' }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+            />
+          </motion.div>
+
+          {/* Center spinner overlay */}
+          <motion.div
+            key="overlay"
+            className={styles.routeOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.25 } }}
+            transition={{ duration: 0.15 }}
+          >
+            <motion.div
+              className={styles.spinnerWrap}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className={styles.spinner} />
+              <div className={styles.spinnerLogo}>
+                <Image src={logoImg} alt="EoriCart" height={32} style={{ width: 'auto' }} />
+              </div>
+            </motion.div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
@@ -88,25 +109,28 @@ export default function PageLoader() {
   const [routeLoading, setRouteLoading] = useState(false);
   const pathname = usePathname();
   const prevPath = useRef(pathname);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDone = useCallback(() => setShowSplash(false), []);
 
   useEffect(() => {
     if (prevPath.current !== pathname) {
       prevPath.current = pathname;
       setRouteLoading(true);
-      const t = setTimeout(() => setRouteLoading(false), 700);
-      return () => clearTimeout(t);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setRouteLoading(false), 650);
     }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [pathname]);
 
   return (
     <>
       <AnimatePresence>
-        {showSplash && (
-          <SplashLoader key="splash" onDone={() => setShowSplash(false)} />
-        )}
+        {showSplash && <SplashLoader key="splash" onDone={handleDone} />}
       </AnimatePresence>
-
-      <TopBarLoader active={routeLoading} />
+      <RouteLoader active={routeLoading} />
     </>
   );
 }

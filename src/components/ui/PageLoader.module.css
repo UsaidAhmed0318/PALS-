@@ -1,4 +1,8 @@
-/* ── Splash (full screen initial loader) ── */
+/* ========================
+   PAGE LOADER
+   ======================== */
+
+/* ── Splash (full screen — initial visit only) ── */
 .splash {
   position: fixed;
   inset: 0;
@@ -33,7 +37,6 @@
   filter: drop-shadow(0 8px 24px rgba(2, 105, 166, 0.18));
 }
 
-/* Bouncing dots */
 .dotsRow {
   display: flex;
   align-items: center;
@@ -48,14 +51,8 @@
   background: var(--clr-primary, #0269a6);
 }
 
-.dot:nth-child(2) {
-  background: var(--clr-accent, #9fbb32);
-}
-
-.dot:nth-child(3) {
-  background: var(--clr-primary, #0269a6);
-  opacity: 0.6;
-}
+.dot:nth-child(2) { background: var(--clr-accent, #9fbb32); }
+.dot:nth-child(3) { background: var(--clr-primary, #0269a6); opacity: 0.6; }
 
 .splashText {
   font-size: 13px;
@@ -65,7 +62,6 @@
   margin-top: -10px;
 }
 
-/* Bottom progress bar */
 .splashProgress {
   position: absolute;
   bottom: 0;
@@ -90,12 +86,60 @@
   height: 3px;
   z-index: 9998;
   background: transparent;
+  pointer-events: none;
 }
 
 .topBarFill {
   height: 100%;
-  background: linear-gradient(90deg, #0269a6 0%, #9fbb32 60%, #0269a6 100%);
-  background-size: 200% 100%;
+  background: linear-gradient(90deg, #0269a6 0%, #9fbb32 60%, #0390e0 100%);
   border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 8px rgba(2, 105, 166, 0.5);
+  box-shadow: 0 0 10px rgba(2, 105, 166, 0.6);
+}
+
+/* ── Route overlay (centered spinner shown on every page change) ── */
+.routeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+/* Spinner wrap — logo in center + ring around it */
+.spinnerWrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinning ring */
+.spinner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(2, 105, 166, 0.12);
+  border-top-color: #0269a6;
+  border-right-color: #9fbb32;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Logo inside spinner */
+.spinnerLogo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 8px rgba(2, 105, 166, 0.2));
 }
