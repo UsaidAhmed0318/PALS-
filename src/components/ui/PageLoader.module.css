@@ -1,0 +1,101 @@
+/* ── Splash (full screen initial loader) ── */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.splashBg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(2, 105, 166, 0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(159, 187, 50, 0.06) 0%, transparent 50%),
+    linear-gradient(160deg, #f0f8ff 0%, #ffffff 50%, #f5fbf0 100%);
+  pointer-events: none;
+}
+
+.splashContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.logoWrap {
+  filter: drop-shadow(0 8px 24px rgba(2, 105, 166, 0.18));
+}
+
+/* Bouncing dots */
+.dotsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--clr-primary, #0269a6);
+}
+
+.dot:nth-child(2) {
+  background: var(--clr-accent, #9fbb32);
+}
+
+.dot:nth-child(3) {
+  background: var(--clr-primary, #0269a6);
+  opacity: 0.6;
+}
+
+.splashText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8fa3b0;
+  letter-spacing: 0.5px;
+  margin-top: -10px;
+}
+
+/* Bottom progress bar */
+.splashProgress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(2, 105, 166, 0.1);
+}
+
+.splashProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0269a6, #9fbb32);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Top bar (route change) ── */
+.topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9998;
+  background: transparent;
+}
+
+.topBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0269a6 0%, #9fbb32 60%, #0269a6 100%);
+  background-size: 200% 100%;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(2, 105, 166, 0.5);
+}

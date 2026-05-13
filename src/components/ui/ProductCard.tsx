@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCartIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+import { ShoppingCartIcon, HeartIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { useCart } from '@/components/cart/CartContext';
 import styles from './ProductCard.module.css';
@@ -63,27 +64,35 @@ export default function ProductCard({
   };
 
   return (
-    <article className={styles.card}>
+    <motion.article
+      className={styles.card}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      whileHover={{ y: -5, boxShadow: '0 16px 40px rgba(2,105,166,0.13)' }}
+    >
       <Link href={`/products/${encodeURIComponent(itemCode)}`} className={styles.cardLink}>
         <div className={styles.imageWrapper}>
           {(badge || discount) && (
             <span className={styles.badge}>{badge || `${discount}% off`}</span>
           )}
 
-          <button
+          <motion.button
             className={`${styles.wishBtn} ${wished ? styles.wishBtnActive : ''}`}
             onClick={(e) => {
               e.preventDefault();
               setWished((w) => !w);
             }}
             aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
+            whileTap={{ scale: 0.82 }}
           >
             {wished ? (
               <HeartSolid className={styles.wishIcon} />
             ) : (
               <HeartIcon className={styles.wishIcon} />
             )}
-          </button>
+          </motion.button>
 
           {imageUrl ? (
             <Image
@@ -107,10 +116,10 @@ export default function ProductCard({
           <div className={styles.priceRow}>
             {price ? (
               <>
-                <span className={styles.price}>Rs. {price.toLocaleString()}</span>
+                <span className={styles.price}>Rs.&nbsp;{price.toLocaleString()}</span>
                 {originalPrice && originalPrice > price && (
                   <span className={styles.originalPrice}>
-                    Rs. {originalPrice.toLocaleString()}
+                    Rs.&nbsp;{originalPrice.toLocaleString()}
                   </span>
                 )}
               </>
@@ -122,15 +131,19 @@ export default function ProductCard({
       </Link>
 
       <div className={styles.actions}>
-        <button
+        <motion.button
           className={`${styles.addBtn} ${added ? styles.addedBtn : ''}`}
           onClick={handleAddToCart}
           aria-label={`Add ${itemName} to cart`}
+          whileTap={{ scale: 0.96 }}
         >
-          <ShoppingCartIcon className={styles.addIcon} />
-          <span>{added ? 'Added!' : 'Add to Cart'}</span>
-        </button>
+          {added
+            ? <CheckIcon className={styles.addIcon} />
+            : <ShoppingCartIcon className={styles.addIcon} />
+          }
+          <span>{added ? 'Added to Cart!' : 'Add to Cart'}</span>
+        </motion.button>
       </div>
-    </article>
+    </motion.article>
   );
 }

@@ -25,6 +25,7 @@ export default function HomePage() {
         title="Featured Products"
         subtitle="Handpicked for You"
         limit={8}
+        bg="white"
       />
       <PromoSection />
       <FeaturedProducts
@@ -32,6 +33,7 @@ export default function HomePage() {
         subtitle="Just Added"
         orderBy="creation desc"
         limit={8}
+        bg="light"
       />
       <Newsletter />
     </>

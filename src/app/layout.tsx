@@ -7,6 +7,7 @@ import { CartProvider } from '@/components/cart/CartContext';
 import CartDrawer from '@/components/cart/CartDrawer';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/footer/Footer';
+import PageLoader from '@/components/ui/PageLoader';
 
 export const metadata = {
   metadataBase: new URL(
@@ -59,6 +60,7 @@ export default function RootLayout({
         <QueryProvider>
           <SessionProvider>
             <CartProvider>
+              <PageLoader />
               <Header />
               <main>{children}</main>
               <Footer />

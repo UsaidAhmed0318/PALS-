@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useProducts } from '@/lib/hooks/useProducts';
 import ProductCard from '@/components/ui/ProductCard';
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
@@ -13,6 +14,7 @@ interface FeaturedProductsProps {
   orderBy?: string;
   limit?: number;
   viewMoreHref?: string;
+  bg?: 'light' | 'white';
 }
 
 export default function FeaturedProducts({
@@ -22,25 +24,36 @@ export default function FeaturedProducts({
   orderBy,
   limit = 8,
   viewMoreHref = '/products',
+  bg = 'light',
 }: FeaturedProductsProps) {
   const filters = category ? { item_group: category } : undefined;
   const { data, isLoading, error } = useProducts(filters, limit, orderBy);
   const products = data?.data || [];
 
+  const sectionId = `section-${title.replace(/\s+/g, '-')}`;
+
   return (
-    <section className={styles.section} aria-labelledby={`section-${title.replace(/\s/g, '-')}`}>
+    <section
+      className={`${styles.section} ${bg === 'white' ? styles.sectionWhite : ''}`}
+      aria-labelledby={sectionId}
+    >
       <div className={styles.container}>
-        <div className={styles.sectionHead}>
+        <motion.div
+          className={styles.sectionHead}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45 }}
+        >
           <div className={styles.headingGroup}>
             {subtitle && <span className={styles.eyebrow}>{subtitle}</span>}
-            <h2 id={`section-${title.replace(/\s/g, '-')}`} className={styles.heading}>
-              {title}
-            </h2>
+            <h2 id={sectionId} className={styles.heading}>{title}</h2>
+            <div className={styles.headingLine} />
           </div>
           <Link href={viewMoreHref} className={styles.viewAll}>
-            View All
+            View All →
           </Link>
-        </div>
+        </motion.div>
 
         <div className={styles.grid}>
           {isLoading ? (
@@ -49,14 +62,7 @@ export default function FeaturedProducts({
             ))
           ) : error ? (
             <div className={styles.errorState}>
-              <p>
-                Could not load products.{' '}
-                {process.env.NODE_ENV === 'development' && (
-                  <span style={{ fontSize: 12, opacity: 0.7 }}>
-                    {(error as Error)?.message}
-                  </span>
-                )}
-              </p>
+              <p>Could not load products. Please check your connection.</p>
               <button onClick={() => window.location.reload()}>Retry</button>
             </div>
           ) : products.length === 0 ? (

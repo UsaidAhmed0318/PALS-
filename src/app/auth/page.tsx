@@ -1,30 +1,32 @@
-"use client";
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useActionState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+'use client';
 
-import Link from "next/link";
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useActionState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
 
-import styles from "./login.module.css";
-import authAction from "@/lib/actions/auth.action";
-import AuthWrapper from "@/components/authWrapper/AuthWrapper";
-import Input from "@/components/input/Input";
+import styles from './login.module.css';
+import authAction from '@/lib/actions/auth.action';
+import AuthWrapper from '@/components/authWrapper/AuthWrapper';
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div className={styles.authWrapper}>Loading....</div>}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f4f8fb' }} />}>
       <AuthForm />
     </Suspense>
   );
 }
 
-// AuthForm
-
 function AuthForm() {
   const searchParams = useSearchParams();
-  const mode = searchParams.get("mode") === "signup" ? "signup" : "login";
+  const mode = searchParams.get('mode') === 'signup' ? 'signup' : 'login';
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -35,117 +37,136 @@ function AuthForm() {
 
   useEffect(() => {
     if (formState.success && formState.redirectTo) {
-      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ['session'] });
       router.push(formState.redirectTo);
     }
   }, [formState.success, formState.redirectTo, queryClient, router]);
 
   return (
     <AuthWrapper mode={mode}>
-      <div
-        className={`${
-          mode === "signup" ? styles.signupCard : styles.loginCard
-        }${styles.card}`}
-      >
-        <div className={styles.tabs}>
-          <Link
-            href="/auth?mode=login"
-            className={`${styles.tabLink} ${
-              mode === "login" ? styles.activeTab : styles.inactiveTab
-            }`}
-          >
-            Login
-          </Link>
-          <Link
-            href="/auth?mode=signup"
-            className={`${styles.tabLink} ${
-              mode === "signup" ? styles.activeTab : styles.inactiveTab
-            }`}
-          >
-            Sign Up
-          </Link>
-        </div>
+      {/* Tab switcher */}
+      <div className={styles.tabs}>
+        <Link
+          href="/auth?mode=login"
+          className={`${styles.tabLink} ${mode === 'login' ? styles.activeTab : styles.inactiveTab}`}
+        >
+          Sign In
+        </Link>
+        <Link
+          href="/auth?mode=signup"
+          className={`${styles.tabLink} ${mode === 'signup' ? styles.activeTab : styles.inactiveTab}`}
+        >
+          Register
+        </Link>
+      </div>
 
-        <form action={action} className={styles.form} noValidate>
-          <Input type="hidden" name="auth_mode" value={mode} />
-          {/* Success message (signup) */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={mode}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.22 }}
+        >
+          <h2 className={styles.heading}>
+            {mode === 'login' ? 'Welcome back!' : 'Create your account'}
+          </h2>
+          <p className={styles.subheading}>
+            {mode === 'login'
+              ? 'Sign in to your EoriCart account'
+              : 'Join thousands of happy customers'}
+          </p>
+
+          {/* Global success message */}
           {formState.success && formState.message && (
-            <p className={styles.successText}>{formState.message}</p>
+            <div className={styles.successText}>
+              <CheckCircleIcon style={{ width: 18, height: 18, flexShrink: 0 }} />
+              {formState.message}
+            </div>
           )}
 
+          {/* Global error message */}
           {formState.message && !formState.success && (
-            <p className={styles.errorText}>*{formState.message}</p>
+            <div className={styles.errorAlert}>
+              <ExclamationCircleIcon style={{ width: 18, height: 18, flexShrink: 0 }} />
+              {formState.message}
+            </div>
           )}
-          {/* Only show form if not yet successful signup */}
-          {!(formState.success && mode === "signup") && (
-            <>
-              {/* Full Name — signup only */}
-              {mode === "signup" && (
-                <>
-                  <Input
+
+          {!(formState.success && mode === 'signup') && (
+            <form action={action} className={styles.form} noValidate>
+              <input type="hidden" name="auth_mode" value={mode} />
+
+              {mode === 'signup' && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="fullName">Full Name</label>
+                  <input
+                    id="fullName"
+                    className={styles.authInput}
                     name="fullName"
                     type="text"
-                    placeholder="Full Name"
-                    defaultValue={
-                      (formState.enteredValues?.fullName as string) ?? ""
-                    }
+                    placeholder="Enter your full name"
+                    defaultValue={(formState.enteredValues?.fullName as string) ?? ''}
+                    autoComplete="name"
                   />
                   {formState.errors?.fullName && (
-                    <p className={styles.errorText}>
-                      *{formState.errors.fullName[0]}
-                    </p>
+                    <p className={styles.errorText}>{formState.errors.fullName[0]}</p>
                   )}
-                </>
+                </div>
               )}
-              <Input
-                name="email"
-                type="email"
-                placeholder="Email"
-                defaultValue={(formState.enteredValues?.email as string) ?? ""}
-              />
-              {formState.errors?.email && (
-                <p className={styles.errorText}>*{formState.errors.email[0]}</p>
-              )}
-              {mode === "login" && (
-                <Input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  defaultValue={
-                    (formState.enteredValues?.password as string) ?? ""
-                  }
+
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel} htmlFor="email">Email Address</label>
+                <input
+                  id="email"
+                  className={styles.authInput}
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  defaultValue={(formState.enteredValues?.email as string) ?? ''}
+                  autoComplete="email"
                 />
-              )}
-              {mode === "login" && formState.errors?.password && (
-                <p className={styles.errorText}>
-                  *{formState.errors.password[0]}
-                </p>
+                {formState.errors?.email && (
+                  <p className={styles.errorText}>{formState.errors.email[0]}</p>
+                )}
+              </div>
+
+              {mode === 'login' && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    className={styles.authInput}
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    defaultValue={(formState.enteredValues?.password as string) ?? ''}
+                    autoComplete="current-password"
+                  />
+                  {formState.errors?.password && (
+                    <p className={styles.errorText}>{formState.errors.password[0]}</p>
+                  )}
+                  <Link href="/auth/reset-password" className={styles.forgotLink}>
+                    Forgot password?
+                  </Link>
+                </div>
               )}
 
-              {/* General error message (e.g., "Invalid credentials") */}
-              {formState.message && !formState.success && (
-                <p className={styles.errorText}>*{formState.message}</p>
-              )}
-
-              <button
-                type="submit"
-                disabled={isPending}
-                className={styles.submitBtn}
-              >
-                {mode === "signup" ? "Sign Up" : "Login"}
+              <button type="submit" disabled={isPending} className={styles.submitBtn}>
+                {isPending
+                  ? 'Please wait...'
+                  : mode === 'signup'
+                    ? 'Create Account'
+                    : 'Sign In'}
               </button>
-              {mode === "login" && (
-                <Link href="/auth/reset-password" className={styles.backLink}>
-                  Forgot Password?
-                </Link>
-              )}
-            </>
+
+              <Link href="/" className={styles.backLink}>
+                ← Continue shopping without account
+              </Link>
+            </form>
           )}
-          <Link href="/" className={styles.backLink}>
-            Back to Shopping
-          </Link>
-        </form>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     </AuthWrapper>
   );
 }

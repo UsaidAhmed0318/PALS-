@@ -7,24 +7,24 @@ import {
   MapPinIcon,
   PhoneIcon,
   EnvelopeIcon,
+  ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { useCategories } from '@/lib/hooks/useCategories';
 import logoImg from '@/assets/Eori Cart/eoricart-logo.png';
 import styles from './Footer.module.css';
 
 const QUICK_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'All Products', href: '/products' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'About Us', href: '/aboutus' },
-  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Home',             href: '/' },
+  { label: 'All Products',     href: '/products' },
+  { label: 'Contact Us',       href: '/contact' },
+  { label: 'Privacy Policy',   href: '/privacy' },
   { label: 'Terms & Conditions', href: '/terms' },
-  { label: 'FAQs', href: '/faqs' },
+  { label: 'FAQs',             href: '/faqs' },
 ];
 
 export default function Footer() {
   const { data: catData } = useCategories();
-  const categories = (catData?.data || []).slice(0, 8);
+  const allCats = catData?.data || [];
 
   const [email, setEmail] = useState('');
   const [subDone, setSubDone] = useState(false);
@@ -37,7 +37,7 @@ export default function Footer() {
 
   return (
     <footer className={styles.footer}>
-      {/* Top notice marquee */}
+      {/* Marquee notice bar */}
       <div className={styles.marqueeBar} aria-hidden="true">
         <div className={styles.marqueeTrack}>
           {[1, 2].map((rep) => (
@@ -57,26 +57,22 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* ── Main footer grid ── */}
       <div className={styles.main}>
         <div className={styles.grid}>
-          {/* Brand column */}
+          {/* Brand */}
           <div className={styles.brand}>
             <Link href="/">
-              <Image
-                src={logoImg}
-                alt="EoriCart"
-                height={48}
-                style={{ width: 'auto' }}
-              />
+              <Image src={logoImg} alt="EoriCart" height={50} style={{ width: 'auto', filter: 'brightness(0) invert(1)' }} />
             </Link>
             <p className={styles.tagline}>
               Pakistan&apos;s trusted grocery store. Fresh deals on essentials,
               delivered fast to your door.
             </p>
             <div className={styles.contact}>
-              <a href="tel:+92300000000" className={styles.contactItem}>
+              <a href="tel:+923001234567" className={styles.contactItem}>
                 <PhoneIcon className={styles.contactIcon} />
-                <span>+92 300 0000 000</span>
+                <span>+92 300 1234 567</span>
               </a>
               <a href="mailto:support@eoricart.com" className={styles.contactItem}>
                 <EnvelopeIcon className={styles.contactIcon} />
@@ -84,7 +80,7 @@ export default function Footer() {
               </a>
               <div className={styles.contactItem}>
                 <MapPinIcon className={styles.contactIcon} />
-                <span>Pakistan</span>
+                <span>Pakistan — Nationwide Delivery</span>
               </div>
             </div>
           </div>
@@ -96,6 +92,7 @@ export default function Footer() {
               {QUICK_LINKS.map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className={styles.footerLink}>
+                    <ChevronRightIcon className={styles.linkArrow} />
                     {link.label}
                   </Link>
                 </li>
@@ -103,26 +100,25 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Categories text list */}
           <div className={styles.col}>
             <h3 className={styles.colTitle}>Categories</h3>
             <ul className={styles.linkList}>
-              {(categories as any[]).length > 0 ? (
-                (categories as any[]).map((cat) => (
+              {allCats.length > 0 ? (
+                (allCats as any[]).slice(0, 10).map((cat) => (
                   <li key={cat.name}>
                     <Link
                       href={`/products?category=${encodeURIComponent(cat.name)}`}
                       className={styles.footerLink}
                     >
+                      <ChevronRightIcon className={styles.linkArrow} />
                       {cat.name}
                     </Link>
                   </li>
                 ))
               ) : (
                 <li>
-                  <Link href="/products" className={styles.footerLink}>
-                    All Products
-                  </Link>
+                  <Link href="/products" className={styles.footerLink}>All Products</Link>
                 </li>
               )}
             </ul>
@@ -132,12 +128,11 @@ export default function Footer() {
           <div className={styles.col}>
             <h3 className={styles.colTitle}>Newsletter</h3>
             <p className={styles.newsDesc}>
-              Get exclusive deals, new arrivals and savings delivered to your
-              inbox.
+              Get exclusive deals, new arrivals and savings straight to your inbox.
             </p>
             {subDone ? (
               <p className={styles.subSuccess}>
-                Thanks for subscribing!
+                ✓ Thanks for subscribing!
               </p>
             ) : (
               <form className={styles.newsForm} onSubmit={handleSubscribe}>
@@ -149,11 +144,12 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <button type="submit" className={styles.newsBtn}>
-                  Subscribe
-                </button>
+                <button type="submit" className={styles.newsBtn}>Subscribe</button>
               </form>
             )}
+            <div className={styles.trust}>
+              <span>🔒 No spam. Unsubscribe anytime.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -165,7 +161,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} EoriCart. All rights reserved.
           </span>
           <div className={styles.bottomLinks}>
-            <Link href="/privacy">Privacy</Link>
+            <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/faqs">FAQs</Link>
           </div>
